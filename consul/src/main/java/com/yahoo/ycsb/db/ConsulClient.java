@@ -142,9 +142,9 @@ public class ConsulClient extends DB {
 			for (Iterator<Map.Entry<String, JsonNode>> jsonFields = json.fields(); jsonFields.hasNext();) {
 				Map.Entry<String, JsonNode> jsonField = jsonFields.next();
 				String name = jsonField.getKey();
-				if (checkFields && fields.contains(name)) {
-					continue;
-				}
+				// if (checkFields && fields.contains(name)) {
+				// continue;
+				// }
 				JsonNode jsonValue = jsonField.getValue();
 				if (jsonValue != null && !jsonValue.isNull()) {
 					dest.put(name, new StringByteIterator(jsonValue.asText()));
