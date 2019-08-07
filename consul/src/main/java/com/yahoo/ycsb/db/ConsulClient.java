@@ -91,7 +91,7 @@ public class ConsulClient extends DB {
 
 	@Override
 	public Status read(String table, String key, Set<String> fields, Map<String, ByteIterator> result) {
-		int clientIndex = (int) ((roundrobin++) % clients.size());
+		int clientIndex = (int) (Math.abs((roundrobin++)) % clients.size());
 		Optional<Value> value = clients.get(clientIndex).getValue(table + "." + key, additionalOptions);
 		if (value.isEmpty() || value.get().getValue().isEmpty()) {
 			return Status.ERROR;
@@ -113,7 +113,7 @@ public class ConsulClient extends DB {
 
 	@Override
 	public Status insert(String table, String key, Map<String, ByteIterator> values) {
-		int clientIndex = (int) ((roundrobin++) % clients.size());
+		int clientIndex = (int) (Math.abs((roundrobin++)) % clients.size());
 		if (clients.get(clientIndex).putValue(table + "." + key, encode(values))) {
 			return Status.OK;
 		}
@@ -122,7 +122,7 @@ public class ConsulClient extends DB {
 
 	@Override
 	public Status delete(String table, String key) {
-		int clientIndex = (int) ((roundrobin++) % clients.size());
+		int clientIndex = (int) (Math.abs((roundrobin++)) % clients.size());
 		clients.get(clientIndex).deleteKey(table + "." + key);
 		return Status.OK;
 	}
