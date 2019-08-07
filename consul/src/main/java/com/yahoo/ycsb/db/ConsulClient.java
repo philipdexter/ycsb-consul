@@ -20,6 +20,7 @@ package com.yahoo.ycsb.db;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -61,6 +62,8 @@ public class ConsulClient extends DB {
 	private long roundrobin = 0;
 	private QueryOptions additionalOptions;
 
+	private static Base64.Decoder valueDecoder = Base64.getDecoder();
+
 	/* init will be called per client thread */
 	@Override
 	public void init() throws DBException {
@@ -93,7 +96,7 @@ public class ConsulClient extends DB {
 		if (value.isEmpty() || value.get().getValue().isEmpty()) {
 			return Status.ERROR;
 		}
-		decode(value.get().getValue().get(), fields, result);
+		decode(valueDecoder.decode(value.get().getValue().get()), fields, result);
 		return Status.OK;
 	}
 
@@ -131,10 +134,10 @@ public class ConsulClient extends DB {
 	 * @param fields the fields to check.
 	 * @param dest   the result passed back to the ycsb core.
 	 */
-	private void decode(final String source, final Set<String> fields, final Map<String, ByteIterator> dest) {
+	private void decode(final byte[] source, final Set<String> fields, final Map<String, ByteIterator> dest) {
 
 		try {
-			JsonNode json = JSON_MAPPER.readTree((String) source);
+			JsonNode json = JSON_MAPPER.readTree(source);
 			boolean checkFields = fields != null && !fields.isEmpty();
 			for (Iterator<Map.Entry<String, JsonNode>> jsonFields = json.fields(); jsonFields.hasNext();) {
 				Map.Entry<String, JsonNode> jsonField = jsonFields.next();
