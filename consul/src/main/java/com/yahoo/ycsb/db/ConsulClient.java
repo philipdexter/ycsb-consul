@@ -89,7 +89,7 @@ public class ConsulClient extends DB {
 	@Override
 	public Status read(String table, String key, Set<String> fields, Map<String, ByteIterator> result) {
 		int clientIndex = (int) ((roundrobin++) % clients.size());
-		Optional<Value> value = clients.get(clientIndex).getValue("test", additionalOptions);
+		Optional<Value> value = clients.get(clientIndex).getValue(table + "." + key, additionalOptions);
 		if (value.isEmpty() || value.get().getValue().isEmpty()) {
 			return Status.ERROR;
 		}
